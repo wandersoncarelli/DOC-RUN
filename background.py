@@ -6,7 +6,7 @@ from os import path
 img_dir = path.join(path.dirname(__file__), 'img')
 
 # Dados gerais do jogo.
-TITULO = 'BACKGROUND DOC RUN'
+TITULO = 'DOC RUN - BACKGROUND'
 WIDTH = 800  # Largura da tela
 HEIGHT = 600  # Altura da tela
 FPS = 60  # Frames por segundo

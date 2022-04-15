@@ -2,11 +2,11 @@
 import pygame
 from os import path
 
-# Estabelece a pasta que contem as figuras e sons.
+# Estabelece a pasta que contem as imagens.
 img_dir = path.join(path.dirname(__file__), 'img')
 
 # Dados gerais do jogo.
-TITULO = 'Exemplo de Sprite Sheets e Animações'
+TITULO = 'DOC RUN - PLAYER ANIMATION'
 WIDTH = 800  # Largura da tela
 HEIGHT = 600  # Altura da tela
 FPS = 60  # Frames por segundo

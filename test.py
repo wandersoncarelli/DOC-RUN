@@ -2,36 +2,20 @@
 import pygame
 from os import path
 
-# Estabelece a pasta que contem as imagens.
+# Estabelece a pasta que contem as figuras e sons.
 img_dir = path.join(path.dirname(__file__), 'img')
 
 # Dados gerais do jogo.
-TITULO = 'DOC RUN'
+TITULO = 'Exemplo de Sprite Sheets e Animações'
 WIDTH = 800  # Largura da tela
 HEIGHT = 600  # Altura da tela
 FPS = 60  # Frames por segundo
 BLACK = (0, 0, 0)  # Define a cor preta para preencher o fundo da tela
-BACKGROUND_IMG = 'background_img'
-
-# Define a velocidade do mundo, por camadas (temos 11 camadas)
-world_speeds = [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5]
 
 # Define estados possíveis do jogador
 STILL = 0
 WALKING = 1
 JUMPING = 2
-FALLING = 3
-
-
-# Carrega todos os assets do background.
-def load_assets(img_dir):
-    assets = {BACKGROUND_IMG: []}
-    for i in range(1, 12):
-        background = pygame.image.load(path.join(img_dir, f'background_{i}.png')).convert_alpha()
-        # Redimensiona o fundo
-        background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-        assets[BACKGROUND_IMG].append(background)
-    return assets
 
 
 # Recebe uma imagem de sprite sheet e retorna uma lista de imagens.
@@ -70,14 +54,14 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         # Aumenta o tamanho do spritesheet para ficar mais fácil de ver
-        player_sheet = pygame.transform.scale(player_sheet, (288, 288))
+        player_sheet = pygame.transform.scale(player_sheet, (320, 320))
 
         # Define sequências de sprites de cada animação
         spritesheet = load_spritesheet(player_sheet, 4, 4)
         self.animations = {
             STILL: spritesheet[0:1],
             WALKING: spritesheet[1:4],
-            JUMPING: spritesheet[4:5],
+            JUMPING: spritesheet[2:3],
         }
         # Define estado atual (que define qual animação deve ser mostrada)
         self.state = STILL
@@ -89,15 +73,15 @@ class Player(pygame.sprite.Sprite):
         # Detalhes sobre o posicionamento.
         self.rect = self.image.get_rect()
 
-        # Armazena as posições em que o herói surge na tela.
-        self.rect.centerx = 100
-        self.rect.centery = 520
+        # Centraliza na tela.
+        self.rect.centerx = WIDTH / 2
+        self.rect.centery = HEIGHT / 2
 
         # Guarda o tick da primeira imagem
         self.last_update = pygame.time.get_ticks()
 
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
-        self.frame_ticks = 150
+        self.frame_ticks = 300
 
     # Metodo que atualiza a posição do personagem
     def update(self):
@@ -122,7 +106,7 @@ class Player(pygame.sprite.Sprite):
             if self.frame >= len(self.animation):
                 self.frame = 0
 
-            # Armazena a posição do herói na imagem
+            # Armazena a posição do centro da imagem
             center = self.rect.center
             # Atualiza imagem atual
             self.image = self.animation[self.frame]
@@ -135,16 +119,8 @@ def game_screen(screen):
     # Variável para o ajuste de velocidade
     clock = pygame.time.Clock()
 
-    # Carrega assets
-    assets = load_assets(img_dir)
     # Carrega spritesheet
     player_sheet = pygame.image.load(path.join(img_dir, 'player.png')).convert_alpha()
-
-    # Carrega o fundo do jogo
-    backgrounds = assets[BACKGROUND_IMG]
-    background_rects = []
-    for background in backgrounds:
-        background_rects.append(background.get_rect())
 
     # Cria Sprite do jogador
     player = Player(player_sheet)
@@ -171,42 +147,21 @@ def game_screen(screen):
             # Verifica se soltou alguma tecla.
             if event.type == pygame.KEYUP:
                 # Dependendo da tecla, altera o estado do jogador.
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_1:
                     player.state = STILL
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_2:
                     player.state = WALKING
-                elif event.key == pygame.K_UP:
+                elif event.key == pygame.K_3:
                     player.state = JUMPING
 
         # Depois de processar os eventos.
-        # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentre dele.
+        # Atualiza a acao de cada sprite. O grupo chama o método update() de cada Sprite dentre dele.
         all_sprites.update()
 
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
-
-        # Atualiza a posição de cada camada do fundo e desenha
-        for i in range(len(backgrounds)):
-            world_speed = world_speeds[i]
-            background = backgrounds[i]
-            background_rect = background_rects[i]
-
-            # Atualiza a posição da imagem de fundo.
-            background_rect.x += world_speed
-            # Se o fundo saiu da janela, faz ele voltar para dentro.
-            if background_rect.right < 0:
-                background_rect.x += background_rect.width
-            # Desenha o fundo e uma cópia para a direita.
-            # Assumimos que a imagem selecionada ocupa pelo menos o tamanho da janela.
-            # Além disso, ela deve ser cíclica, ou seja, o lado esquerdo deve ser continuação do direito.
-            screen.blit(background, background_rect)
-            # Desenhamos a imagem novamente, mas deslocada da largura da imagem em x.
-            background_rect2 = background_rect.copy()
-            background_rect2.x += background_rect2.width
-            screen.blit(background, background_rect2)
-
-        # A cada loop, redesenha os sprites do jogador
         all_sprites.draw(screen)
+
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()
 
