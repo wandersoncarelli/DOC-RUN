@@ -21,7 +21,7 @@ world_speeds = [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5]
 def load_assets(img_dir):
     assets = {BACKGROUND_IMG: []}
     for i in range(1, 12):
-        background = pygame.image.load(path.join(img_dir, f'background_{i}.png')).convert_alpha()
+        background = pygame.image.load(path.join(img_dir, f'background-{i}.png')).convert_alpha()
         # Redimensiona o fundo
         background = pygame.transform.scale(background, (WIDTH, HEIGHT))
         assets[BACKGROUND_IMG].append(background)

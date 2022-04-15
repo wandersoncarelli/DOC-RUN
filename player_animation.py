@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):
         self.animations = {
             STILL: spritesheet[0:1],
             WALKING: spritesheet[1:4],
-            JUMPING: spritesheet[2:3],
+            JUMPING: spritesheet[1:2],
         }
         # Define estado atual (que define qual animação deve ser mostrada)
         self.state = STILL
@@ -81,7 +81,7 @@ class Player(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
 
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
-        self.frame_ticks = 300
+        self.frame_ticks = 150
 
     # Metodo que atualiza a posição do personagem
     def update(self):
@@ -145,13 +145,13 @@ def game_screen(screen):
                 state = DONE
 
             # Verifica se soltou alguma tecla.
-            if event.type == pygame.KEYUP:
+            if event.type == pygame.KEYDOWN:
                 # Dependendo da tecla, altera o estado do jogador.
-                if event.key == pygame.K_1:
+                if event.key == pygame.K_LEFT:
                     player.state = STILL
-                elif event.key == pygame.K_2:
+                elif event.key == pygame.K_RIGHT:
                     player.state = WALKING
-                elif event.key == pygame.K_3:
+                elif event.key == pygame.K_UP:
                     player.state = JUMPING
 
         # Depois de processar os eventos.

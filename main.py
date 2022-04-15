@@ -16,6 +16,13 @@ BACKGROUND_IMG = 'background_img'
 # Define a velocidade do mundo, por camadas (temos 11 camadas)
 world_speeds = [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5]
 
+# Define a aceleração da gravidade
+GRAVITY = 1
+# Define a velocidade inicial no pulo
+JUMP_SIZE = 20
+# Define a altura do chão
+GROUND = 555
+
 # Define estados possíveis do jogador
 STILL = 0
 WALKING = 1
@@ -27,7 +34,7 @@ FALLING = 3
 def load_assets(img_dir):
     assets = {BACKGROUND_IMG: []}
     for i in range(1, 12):
-        background = pygame.image.load(path.join(img_dir, f'background_{i}.png')).convert_alpha()
+        background = pygame.image.load(path.join(img_dir, f'background-{i}.png')).convert_alpha()
         # Redimensiona o fundo
         background = pygame.transform.scale(background, (WIDTH, HEIGHT))
         assets[BACKGROUND_IMG].append(background)
@@ -77,9 +84,11 @@ class Player(pygame.sprite.Sprite):
         self.animations = {
             STILL: spritesheet[0:1],
             WALKING: spritesheet[1:4],
-            JUMPING: spritesheet[4:5],
+            JUMPING: spritesheet[1:2],
+            FALLING: spritesheet[1:2],
         }
-        # Define estado atual (que define qual animação deve ser mostrada)
+        # Define estado atual (define qual animação mostrar)
+        # Define se o jogador pode ou não pular
         self.state = STILL
         # Define animação atual
         self.animation = self.animations[self.state]
@@ -90,17 +99,33 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Armazena as posições em que o herói surge na tela.
-        self.rect.centerx = 100
-        self.rect.centery = 520
+        self.rect.left = 100
+        self.rect.y = GROUND
 
         # Guarda o tick da primeira imagem
         self.last_update = pygame.time.get_ticks()
+
+        self.speedy = 0
 
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
         self.frame_ticks = 150
 
     # Metodo que atualiza a posição do personagem
     def update(self):
+        self.speedy += GRAVITY
+        # Atualiza o estado para caindo
+        if self.speedy > 0:
+            self.state = FALLING
+        self.rect.y += self.speedy
+        # Se bater no chão, para de cair
+        if self.rect.bottom > GROUND:
+            # Reposiciona para a posição do chão
+            self.rect.bottom = GROUND
+            # Para de cair
+            self.speedy = 0
+            # Atualiza o estado para parado
+            self.state = WALKING
+
         # Verifica o tick atual.
         now = pygame.time.get_ticks()
 
@@ -129,6 +154,13 @@ class Player(pygame.sprite.Sprite):
             # Atualiza os detalhes de posicionamento
             self.rect = self.image.get_rect()
             self.rect.center = center
+
+    # Método que faz o personagem pular
+    def jump(self):
+        # Só pode pular se ainda não estiver pulando ou caindo
+        if self.state == STILL or self.state == WALKING:
+            self.speedy -= JUMP_SIZE
+            self.state = JUMPING
 
 
 def game_screen(screen):
@@ -169,13 +201,14 @@ def game_screen(screen):
                 state = DONE
 
             # Verifica se soltou alguma tecla.
-            if event.type == pygame.KEYUP:
+            if event.type == pygame.KEYDOWN:
                 # Dependendo da tecla, altera o estado do jogador.
                 if event.key == pygame.K_LEFT:
                     player.state = STILL
                 elif event.key == pygame.K_RIGHT:
                     player.state = WALKING
                 elif event.key == pygame.K_UP:
+                    player.jump()
                     player.state = JUMPING
 
         # Depois de processar os eventos.
