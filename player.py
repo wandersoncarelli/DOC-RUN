@@ -1,21 +1,17 @@
 # Importando as bibliotecas necessárias.
 import pygame
-from os import path
 
-# Estabelece a pasta que contem as imagens.
-img_dir = path.join(path.dirname(__file__), 'img')
-
-# Dados gerais do jogo.
-TITULO = 'DOC RUN - PLAYER ANIMATION'
-WIDTH = 800  # Largura da tela
-HEIGHT = 600  # Altura da tela
-FPS = 60  # Frames por segundo
-BLACK = (0, 0, 0)  # Define a cor preta para preencher o fundo da tela
+# Define a aceleração da gravidade
+GRAVITY = 1
+# Define a velocidade inicial no pulo
+JUMP_SIZE = 20
+# Define a altura do chão
+GROUND = 710
 
 # Define estados possíveis do jogador
-STILL = 0
-WALKING = 1
-JUMPING = 2
+WALKING = 0
+JUMPING = 1
+FALLING = 2
 
 
 # Recebe uma imagem de sprite sheet e retorna uma lista de imagens.
@@ -54,17 +50,18 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         # Aumenta o tamanho do spritesheet para ficar mais fácil de ver
-        player_sheet = pygame.transform.scale(player_sheet, (320, 320))
+        player_sheet = pygame.transform.scale(player_sheet, (288, 288))
 
         # Define sequências de sprites de cada animação
         spritesheet = load_spritesheet(player_sheet, 4, 4)
         self.animations = {
-            STILL: spritesheet[0:1],
-            WALKING: spritesheet[1:4],
-            JUMPING: spritesheet[1:2],
+            WALKING: spritesheet[0:3],
+            JUMPING: spritesheet[0:1],
+            FALLING: spritesheet[0:1],
         }
-        # Define estado atual (que define qual animação deve ser mostrada)
-        self.state = STILL
+        # Define estado atual (define qual animação mostrar)
+        # Define se o jogador pode ou não pular
+        self.state = WALKING
         # Define animação atual
         self.animation = self.animations[self.state]
         # Inicializa o primeiro quadro da animação
@@ -73,18 +70,34 @@ class Player(pygame.sprite.Sprite):
         # Detalhes sobre o posicionamento.
         self.rect = self.image.get_rect()
 
-        # Centraliza na tela.
-        self.rect.centerx = WIDTH / 2
-        self.rect.centery = HEIGHT / 2
+        # Armazena as posições em que o herói surge na tela.
+        self.rect.left = 100
+        self.rect.y = GROUND
 
         # Guarda o tick da primeira imagem
         self.last_update = pygame.time.get_ticks()
+
+        self.speedy = 0
 
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
         self.frame_ticks = 150
 
     # Metodo que atualiza a posição do personagem
     def update(self):
+        self.speedy += GRAVITY
+        # Atualiza o estado para caindo
+        if self.speedy > 0:
+            self.state = FALLING
+        self.rect.y += self.speedy
+        # Se bater no chão, para de cair
+        if self.rect.bottom > GROUND:
+            # Reposiciona para a posição do chão
+            self.rect.bottom = GROUND
+            # Para de cair
+            self.speedy = 0
+            # Atualiza o estado para parado
+            self.state = WALKING
+
         # Verifica o tick atual.
         now = pygame.time.get_ticks()
 
@@ -106,7 +119,7 @@ class Player(pygame.sprite.Sprite):
             if self.frame >= len(self.animation):
                 self.frame = 0
 
-            # Armazena a posição do centro da imagem
+            # Armazena a posição do herói na imagem
             center = self.rect.center
             # Atualiza imagem atual
             self.image = self.animation[self.frame]
@@ -114,70 +127,9 @@ class Player(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.rect.center = center
 
-
-def game_screen(screen):
-    # Variável para o ajuste de velocidade
-    clock = pygame.time.Clock()
-
-    # Carrega spritesheet
-    player_sheet = pygame.image.load(path.join(img_dir, 'player.png')).convert_alpha()
-
-    # Cria Sprite do jogador
-    player = Player(player_sheet)
-    # Cria um grupo de todos os sprites e adiciona o jogador.
-    all_sprites = pygame.sprite.Group()
-    all_sprites.add(player)
-
-    PLAYING = 0
-    DONE = 1
-
-    state = PLAYING
-    while state != DONE:
-
-        # Ajusta a velocidade do jogo.
-        clock.tick(FPS)
-
-        # Processa os eventos (mouse, teclado, botão, etc).
-        for event in pygame.event.get():
-
-            # Verifica se foi fechado.
-            if event.type == pygame.QUIT:
-                state = DONE
-
-            # Verifica se soltou alguma tecla.
-            if event.type == pygame.KEYDOWN:
-                # Dependendo da tecla, altera o estado do jogador.
-                if event.key == pygame.K_LEFT:
-                    player.state = STILL
-                elif event.key == pygame.K_RIGHT:
-                    player.state = WALKING
-                elif event.key == pygame.K_UP:
-                    player.state = JUMPING
-
-        # Depois de processar os eventos.
-        # Atualiza a acao de cada sprite. O grupo chama o método update() de cada Sprite dentre dele.
-        all_sprites.update()
-
-        # A cada loop, redesenha o fundo e os sprites
-        screen.fill(BLACK)
-        all_sprites.draw(screen)
-
-        # Depois de desenhar tudo, inverte o display.
-        pygame.display.flip()
-
-
-# Inicialização do Pygame.
-pygame.init()
-pygame.mixer.init()
-
-# Tamanho da tela.
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
-# Nome do jogo
-pygame.display.set_caption(TITULO)
-
-# Comando para evitar travamentos.
-try:
-    game_screen(screen)
-finally:
-    pygame.quit()
+    # Método que faz o personagem pular
+    def jump(self):
+        # Só pode pular se ainda não estiver pulando ou caindo
+        if self.state == WALKING:
+            self.speedy -= JUMP_SIZE
+            self.state = JUMPING

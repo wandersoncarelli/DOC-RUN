@@ -1,23 +1,34 @@
+# Importando as bibliotecas necessárias.
 import pygame
 import pygame_menu
+from game_screen import game_screen
 
-pygame.init()
-surface = pygame.display.set_mode((800, 600))
+# Dados gerais do jogo.
+TITULO = 'DOC RUN'
+WIDTH = 1024  # Largura da tela
+HEIGHT = 768  # Altura da tela
 
-def set_difficulty(value, difficulty):
-    # Do the job here !
+# Tamanho da tela.
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+
+def start():
+    game_screen(screen)
+
+
+def how_to_play():
     pass
 
-def start_the_game():
-    # Do the job here !
+
+def game_credits():
     pass
 
 
-menu = pygame_menu.Menu('Welcome', 400, 300, theme=pygame_menu.themes.THEME_DARK)
+def run_game():
+    menu = pygame_menu.Menu('DOC RUN', 400, 300, theme=pygame_menu.themes.THEME_DARK)
+    menu.add.button('Jogar', start)
+    menu.add.button('Como jogar', how_to_play)
+    menu.add.button('Créditos', game_credits)
+    menu.add.button('Sair', pygame_menu.events.EXIT)
 
-menu.add.text_input('Name: ', default='')
-menu.add.selector('Difficulty: ', [('Hard', 1), ('Easy', 2)], onchange=set_difficulty)
-menu.add.button('Play', start_the_game)
-menu.add.button('Quit', pygame_menu.events.EXIT)
-
-menu.mainloop(surface)
+    menu.mainloop(screen)
