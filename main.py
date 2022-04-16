@@ -1,5 +1,6 @@
 # Importando as bibliotecas necessárias.
 import pygame
+import pygame_menu
 from os import path
 
 # Estabelece a pasta que contem as imagens.
@@ -204,6 +205,8 @@ def game_screen(screen):
                 if event.key == pygame.K_UP:
                     player.jump()
                     player.state = JUMPING
+                if event.key == pygame.K_ESCAPE:
+                    state = DONE
 
         # Depois de processar os eventos.
         # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentre dele.
@@ -245,11 +248,28 @@ pygame.mixer.init()
 # Tamanho da tela.
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
+menu = pygame_menu.Menu('DOC RUN', 400, 300, theme=pygame_menu.themes.THEME_DARK)
+
 # Nome do jogo
 pygame.display.set_caption(TITULO)
 
+
 # Comando para evitar travamentos.
-try:
+def start_the_game():
     game_screen(screen)
-finally:
-    pygame.quit()
+
+
+def how_to_play():
+    pass
+
+
+def game_credits():
+    pass
+
+
+menu.add.button('Jogar', start_the_game)
+menu.add.button('Como jogar', how_to_play)
+menu.add.button('Créditos', game_credits)
+menu.add.button('Sair', pygame_menu.events.EXIT)
+
+menu.mainloop(screen)
