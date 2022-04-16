@@ -7,8 +7,8 @@ img_dir = path.join(path.dirname(__file__), 'img')
 
 # Dados gerais do jogo.
 TITULO = 'DOC RUN'
-WIDTH = 800  # Largura da tela
-HEIGHT = 600  # Altura da tela
+WIDTH = 1024  # Largura da tela
+HEIGHT = 768  # Altura da tela
 FPS = 60  # Frames por segundo
 BLACK = (0, 0, 0)  # Define a cor preta para preencher o fundo da tela
 BACKGROUND_IMG = 'background_img'
@@ -21,13 +21,12 @@ GRAVITY = 1
 # Define a velocidade inicial no pulo
 JUMP_SIZE = 20
 # Define a altura do chão
-GROUND = 555
+GROUND = 710
 
 # Define estados possíveis do jogador
-STILL = 0
-WALKING = 1
-JUMPING = 2
-FALLING = 3
+WALKING = 0
+JUMPING = 1
+FALLING = 2
 
 
 # Carrega todos os assets do background.
@@ -82,14 +81,13 @@ class Player(pygame.sprite.Sprite):
         # Define sequências de sprites de cada animação
         spritesheet = load_spritesheet(player_sheet, 4, 4)
         self.animations = {
-            STILL: spritesheet[0:1],
-            WALKING: spritesheet[1:4],
-            JUMPING: spritesheet[1:2],
-            FALLING: spritesheet[1:2],
+            WALKING: spritesheet[0:3],
+            JUMPING: spritesheet[0:1],
+            FALLING: spritesheet[0:1],
         }
         # Define estado atual (define qual animação mostrar)
         # Define se o jogador pode ou não pular
-        self.state = STILL
+        self.state = WALKING
         # Define animação atual
         self.animation = self.animations[self.state]
         # Inicializa o primeiro quadro da animação
@@ -158,7 +156,7 @@ class Player(pygame.sprite.Sprite):
     # Método que faz o personagem pular
     def jump(self):
         # Só pode pular se ainda não estiver pulando ou caindo
-        if self.state == STILL or self.state == WALKING:
+        if self.state == WALKING:
             self.speedy -= JUMP_SIZE
             self.state = JUMPING
 
@@ -203,11 +201,7 @@ def game_screen(screen):
             # Verifica se soltou alguma tecla.
             if event.type == pygame.KEYDOWN:
                 # Dependendo da tecla, altera o estado do jogador.
-                if event.key == pygame.K_LEFT:
-                    player.state = STILL
-                elif event.key == pygame.K_RIGHT:
-                    player.state = WALKING
-                elif event.key == pygame.K_UP:
+                if event.key == pygame.K_UP:
                     player.jump()
                     player.state = JUMPING
 
