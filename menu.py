@@ -12,7 +12,7 @@ HEIGHT = 768  # Altura da tela
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
-def start():
+def run_game():
     game_screen(screen)
 
 
@@ -24,9 +24,9 @@ def game_credits():
     pass
 
 
-def run_game():
+def start_game():
     menu = pygame_menu.Menu('DOC RUN', 400, 300, theme=pygame_menu.themes.THEME_DARK)
-    menu.add.button('Jogar', start)
+    menu.add.button('Jogar', run_game)
     menu.add.button('Como jogar', how_to_play)
     menu.add.button('Créditos', game_credits)
     menu.add.button('Sair', pygame_menu.events.EXIT)

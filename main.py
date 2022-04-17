@@ -1,6 +1,6 @@
 # Importando as bibliotecas necessárias.
 import pygame
-from menu import run_game
+from menu import start_game
 
 # Dados gerais do jogo.
 TITULO = 'DOC RUN'
@@ -17,4 +17,4 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # Nome do jogo
 pygame.display.set_caption(TITULO)
 
-run_game()
+start_game()

@@ -1,5 +1,10 @@
 # Importando as bibliotecas necessárias.
 import pygame
+from os import path
+from random import randint, random
+
+# Estabelece a pasta que contem as imagens.
+img_dir = path.join(path.dirname(__file__), 'img')
 
 # Define a aceleração da gravidade
 GRAVITY = 1
@@ -12,6 +17,8 @@ GROUND = 710
 WALKING = 0
 JUMPING = 1
 FALLING = 2
+INFECTED = 3
+HEALED = 4
 
 
 # Recebe uma imagem de sprite sheet e retorna uma lista de imagens.
@@ -40,11 +47,15 @@ def load_spritesheet(spritesheet, rows, columns):
     return sprites
 
 
-# Classe Jogador que representa o herói
+# Classe Player que representa o herói
 class Player(pygame.sprite.Sprite):
 
     # Construtor da classe. O argumento player_sheet é uma imagem contendo um spritesheet.
-    def __init__(self, player_sheet):
+    def __init__(self, *groups):
+        super().__init__(*groups)
+
+        # Carrega o spritesheet
+        player_sheet = pygame.image.load(path.join(img_dir, 'characters.png')).convert_alpha()
 
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
@@ -55,9 +66,9 @@ class Player(pygame.sprite.Sprite):
         # Define sequências de sprites de cada animação
         spritesheet = load_spritesheet(player_sheet, 4, 4)
         self.animations = {
-            WALKING: spritesheet[0:3],
-            JUMPING: spritesheet[0:1],
-            FALLING: spritesheet[0:1],
+            WALKING: spritesheet[0:4],
+            JUMPING: spritesheet[3:4],
+            FALLING: spritesheet[3:4],
         }
         # Define estado atual (define qual animação mostrar)
         # Define se o jogador pode ou não pular
@@ -133,3 +144,89 @@ class Player(pygame.sprite.Sprite):
         if self.state == WALKING:
             self.speedy -= JUMP_SIZE
             self.state = JUMPING
+
+
+# Classe Citizen que representa as pessoas doentes ou curadas
+class Citizen(pygame.sprite.Sprite):
+
+    # Construtor da classe. O argumento citizen_sheet é uma imagem contendo um spritesheet.
+    def __init__(self, *groups):
+        super().__init__(*groups)
+
+        # Carrega o spritesheet
+        citizen_sheet = pygame.image.load(path.join(img_dir, 'characters.png')).convert_alpha()
+
+        # Construtor da classe pai (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+
+        # Aumenta o tamanho do spritesheet para ficar mais fácil de ver
+        citizen_sheet = pygame.transform.scale(citizen_sheet, (288, 288))
+
+        # Define sequências de sprites de cada animação
+        spritesheet = load_spritesheet(citizen_sheet, 4, 4)
+        self.animations = {
+            INFECTED: spritesheet[4:8],
+            HEALED: spritesheet[8:12],
+        }
+        # Define estado atual (define qual animação mostrar)
+        # Define se o jogador pode ou não pular
+        self.state = INFECTED
+        # Define animação atual
+        self.animation = self.animations[self.state]
+        # Inicializa o primeiro quadro da animação
+        self.frame = 0
+        self.image = self.animation[self.frame]
+        # Detalhes sobre o posicionamento.
+        self.rect = self.image.get_rect()
+
+        # Armazena as posições em que o herói surge na tela.
+        self.rect.x = 1024 + randint(1, 400)
+        self.rect.y = 637
+
+        # Guarda o tick da primeira imagem
+        self.last_update = pygame.time.get_ticks()
+
+        # Define a velocidade de movimento
+        self.speedy = 5 + random() * 2
+
+        # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
+        self.frame_ticks = 150
+
+    # Metodo que atualiza a posição do personagem
+    def update(self, *args):
+
+        # Define a velocidade de movimento no eixo X
+        self.rect.x -= self.speedy
+
+        # Verifica se o citizen saiu do campo de visão e elimina o spritesheet
+        if self.rect.right < 0:
+            self.kill()
+
+        # Verifica o tick atual.
+        now = pygame.time.get_ticks()
+
+        # Verifica quantos ticks se passaram desde a ultima mudança de frame.
+        elapsed_ticks = now - self.last_update
+
+        # Se já está na hora de mudar de imagem...
+        if elapsed_ticks > self.frame_ticks:
+
+            # Marca o tick da nova imagem.
+            self.last_update = now
+
+            # Avança um quadro.
+            self.frame += 1
+
+            # Atualiza animação atual
+            self.animation = self.animations[self.state]
+            # Reinicia a animação caso o índice da imagem atual seja inválido
+            if self.frame >= len(self.animation):
+                self.frame = 0
+
+            # Armazena a posição do herói na imagem
+            center = self.rect.center
+            # Atualiza imagem atual
+            self.image = self.animation[self.frame]
+            # Atualiza os detalhes de posicionamento
+            self.rect = self.image.get_rect()
+            self.rect.center = center

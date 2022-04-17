@@ -1,7 +1,8 @@
 import pygame
-from player import Player
-from background import load_assets
 from os import path
+from random import random
+from characters import Player, Citizen
+from background import load_assets
 
 # Estabelece a pasta que contem as imagens.
 img_dir = path.join(path.dirname(__file__), 'img')
@@ -10,23 +11,23 @@ FPS = 60  # Frames por segundo
 BLACK = (0, 0, 0)  # Define a cor preta para preencher o fundo da tela
 BACKGROUND_IMG = 'background_img'
 
-# Define a velocidade do mundo, por camadas (temos 11 camadas)
+# Define a velocidade do mundo, por camadas (temos 11 camadas).
 world_speeds = [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5]
 
-# Define estados possíveis do jogador
+# Define estados possíveis do jogador.
 WALKING = 0
 JUMPING = 1
 FALLING = 2
 
 
 def game_screen(screen):
+    timer = 0
+
     # Variável para o ajuste de velocidade
     clock = pygame.time.Clock()
 
-    # Carrega assets
+    # Carrega os assets
     assets = load_assets(img_dir)
-    # Carrega spritesheet
-    player_sheet = pygame.image.load(path.join(img_dir, 'player.png')).convert_alpha()
 
     # Carrega o fundo do jogo
     backgrounds = assets[BACKGROUND_IMG]
@@ -34,11 +35,12 @@ def game_screen(screen):
     for background in backgrounds:
         background_rects.append(background.get_rect())
 
-    # Cria Sprite do jogador
-    player = Player(player_sheet)
-    # Cria um grupo de todos os sprites e adiciona o jogador.
+    # Cria um grupo para todos os sprites.
     all_sprites = pygame.sprite.Group()
-    all_sprites.add(player)
+
+    # Cria os sprites do jogador e dos citizens e adiciona no grupo de sprites
+    player = Player(all_sprites)
+    citizen = Citizen(all_sprites)
 
     PLAYING = 0
     DONE = 1
@@ -65,8 +67,15 @@ def game_screen(screen):
                 if event.key == pygame.K_ESCAPE:
                     state = DONE
 
+        timer += 1
+        if timer > 30:
+            timer = 0
+            if random() < 0.5:
+                newCitizen = Citizen(all_sprites)
+                print('new citizen')
+
         # Depois de processar os eventos.
-        # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentre dele.
+        # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentro dele.
         all_sprites.update()
 
         # A cada loop, redesenha o fundo e os sprites
@@ -92,7 +101,7 @@ def game_screen(screen):
             background_rect2.x += background_rect2.width
             screen.blit(background, background_rect2)
 
-        # A cada loop, redesenha os sprites do jogador
+        # A cada loop, redesenha os sprites.
         all_sprites.draw(screen)
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()
