@@ -1,4 +1,3 @@
-# Importando as bibliotecas necessárias.
 import pygame
 from menu import start_game
 

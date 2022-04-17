@@ -1,4 +1,3 @@
-# Importando as bibliotecas necessárias.
 import pygame
 import pygame_menu
 from game_screen import game_screen
