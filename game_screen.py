@@ -72,7 +72,6 @@ def game_screen(screen):
             timer = 0
             if random() < 0.5:
                 newCitizen = Citizen(all_sprites)
-                print('new citizen')
 
         # Depois de processar os eventos.
         # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentro dele.

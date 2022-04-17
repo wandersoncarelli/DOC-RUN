@@ -50,7 +50,7 @@ def load_spritesheet(spritesheet, rows, columns):
 # Classe Player que representa o herói
 class Player(pygame.sprite.Sprite):
 
-    # Construtor da classe. O argumento player_sheet é uma imagem contendo um spritesheet.
+    # Construtor da classe.
     def __init__(self, *groups):
         super().__init__(*groups)
 
@@ -149,7 +149,7 @@ class Player(pygame.sprite.Sprite):
 # Classe Citizen que representa as pessoas doentes ou curadas
 class Citizen(pygame.sprite.Sprite):
 
-    # Construtor da classe. O argumento citizen_sheet é uma imagem contendo um spritesheet.
+    # Construtor da classe.
     def __init__(self, *groups):
         super().__init__(*groups)
 
@@ -169,7 +169,6 @@ class Citizen(pygame.sprite.Sprite):
             HEALED: spritesheet[8:12],
         }
         # Define estado atual (define qual animação mostrar)
-        # Define se o jogador pode ou não pular
         self.state = INFECTED
         # Define animação atual
         self.animation = self.animations[self.state]
