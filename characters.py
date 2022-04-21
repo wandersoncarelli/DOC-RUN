@@ -77,6 +77,7 @@ class Player(pygame.sprite.Sprite):
         # Inicializa o primeiro quadro da animação
         self.frame = 0
         self.image = self.animation[self.frame]
+
         # Detalhes sobre o posicionamento.
         self.rect = self.image.get_rect()
 
@@ -201,8 +202,8 @@ class Citizen(pygame.sprite.Sprite):
             self.kill()
 
         # Teste para mudança de sprites, de infectado para curado (APAGAR DA VERSÃO FINAL)
-        if self.rect.right < 700:
-            self.state = HEALED
+        # if self.rect.right < 700:
+        #    self.state = HEALED
 
         # Verifica o tick atual.
         now = pygame.time.get_ticks()

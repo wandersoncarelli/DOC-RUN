@@ -3,6 +3,7 @@ from os import path
 from random import random
 from characters import Player, Citizen
 from background import load_assets
+from shoot import Shoot
 
 # Estabelece a pasta que contem as imagens.
 img_dir = path.join(path.dirname(__file__), 'img')
@@ -14,47 +15,68 @@ BACKGROUND_IMG = 'background_img'
 # Define a velocidade do mundo, por camadas (temos 11 camadas).
 world_speeds = [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5]
 
+
 # Define estados possíveis do jogador.
 WALKING = 0
 JUMPING = 1
 FALLING = 2
+INFECTED = 3
+HEALED = 4
 
 
 def game_screen(screen):
+
+    # Variável para definir a quantidade de vidas do jogador
+    lives = 5
+
     # Variável para contagem para definir tempo de aparição dos citizens
-    timer = 0
+    timer = 40
 
     # Variável para o ajuste de velocidade
     clock = pygame.time.Clock()
 
-    # Carrega os assets
+    # Carrega os assets do background
     assets = load_assets(img_dir)
 
-    # Carrega o fundo do jogo
+    # Carrega o background do jogo
     backgrounds = assets[BACKGROUND_IMG]
     background_rects = []
     for background in backgrounds:
         background_rects.append(background.get_rect())
 
-    # Cria um grupo para todos os sprites.
-    '''all_sprites = pygame.sprite.Group()
-    todos_sprites = pygame.sprite.Group()'''
-
-    # Cria os sprites do jogador e dos citizens e adiciona no grupo de sprites
+    # Variável para definir o jogador
     player = Player()
+    shoot = Shoot()
 
-    citizens = pygame.sprite.Group()
+    # Cria os grupos de sprites
+    citizensGroup = pygame.sprite.Group()
+    shootsGroup = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
+
+    # Adiciona o player no principal grupo de sprites
     all_sprites.add(player)
 
     PLAYING = 0
     DONE = 1
+
+    # Variável para definir o estado atual do citizen
+    citizen_state = INFECTED
 
     state = PLAYING
     while state != DONE:
 
         # Ajusta a velocidade do jogo.
         clock.tick(FPS)
+
+        # Faz a contagem de tempo para aparecer citizens
+        timer += 1
+        # O jogo está rodando a 60 FPS, neste caso, a cada 30 FPS (meio segundo) vai aparecer um novo citizen
+        if timer > 30:
+            timer = 0
+            if random() < 0.5:
+                new_citizen = Citizen()
+                citizensGroup.add(new_citizen)
+                all_sprites.add(new_citizen)
 
         # Processa os eventos (mouse, teclado, botão, etc).
         for event in pygame.event.get():
@@ -71,16 +93,28 @@ def game_screen(screen):
                     player.state = JUMPING
                 if event.key == pygame.K_ESCAPE:
                     state = DONE
+                if event.key == pygame.K_SPACE:
+                    shoot = Shoot()
+                    shoot.rect.center = player.rect.center
+                    shootsGroup.add(shoot)
+                    all_sprites.add(shoot)
 
-        # Faz a contagem de tempo para aparecer citizens
-        timer += 1
-        # O jogo está rodando a 60 FPS, neste caso, a cada 30 FPS (meio segundo) vai aparecer um novo citizen
-        if timer > 30:
-            timer = 0
-            if random() < 0.5:
-                new_citizen = Citizen()
-                citizens.add(new_citizen)
-                all_sprites.add(new_citizen)
+        # CÓDIGO ABAIXO FUNCIONANDO PARCIALMENTE, POSSUI BUG EM QUE SOMENTE O ÚLTIMO TIRO MUDA O STATE
+        if citizen_state == INFECTED:
+            citizens_collisions = pygame.sprite.groupcollide(shootsGroup, citizensGroup, True, False)
+            if citizens_collisions:
+                heal_collisions = pygame.sprite.spritecollide(shoot, citizensGroup, False)
+                for citizen in heal_collisions:
+                    citizen.state = HEALED
+                    citizen.remove(citizensGroup)
+
+            player_collisions = pygame.sprite.spritecollide(player, citizensGroup, True)
+            if player_collisions:
+                lives -= 1
+                print(lives)
+                if lives == 0:
+                    print('Game over!')
+                    state = DONE
 
         # Depois de processar os eventos.
         # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentro dele.
