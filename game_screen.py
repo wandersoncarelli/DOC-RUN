@@ -37,11 +37,15 @@ def game_screen(screen):
         background_rects.append(background.get_rect())
 
     # Cria um grupo para todos os sprites.
-    all_sprites = pygame.sprite.Group()
+    '''all_sprites = pygame.sprite.Group()
+    todos_sprites = pygame.sprite.Group()'''
 
     # Cria os sprites do jogador e dos citizens e adiciona no grupo de sprites
-    player = Player(all_sprites)
-    citizen = Citizen(all_sprites)
+    player = Player()
+
+    citizens = pygame.sprite.Group()
+    all_sprites = pygame.sprite.Group()
+    all_sprites.add(player)
 
     PLAYING = 0
     DONE = 1
@@ -74,7 +78,9 @@ def game_screen(screen):
         if timer > 30:
             timer = 0
             if random() < 0.5:
-                newCitizen = Citizen(all_sprites)
+                new_citizen = Citizen()
+                citizens.add(new_citizen)
+                all_sprites.add(new_citizen)
 
         # Depois de processar os eventos.
         # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentro dele.

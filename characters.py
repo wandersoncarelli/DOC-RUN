@@ -50,8 +50,8 @@ def load_spritesheet(spritesheet, rows, columns):
 class Player(pygame.sprite.Sprite):
 
     # Construtor da classe.
-    def __init__(self, *groups):
-        super().__init__(*groups)
+    def __init__(self):
+        super(Player, self).__init__()
 
         # Carrega o spritesheet
         player_sheet = pygame.image.load(path.join(img_dir, 'characters.png')).convert_alpha()
@@ -149,8 +149,8 @@ class Player(pygame.sprite.Sprite):
 class Citizen(pygame.sprite.Sprite):
 
     # Construtor da classe.
-    def __init__(self, *groups):
-        super().__init__(*groups)
+    def __init__(self):
+        super(Citizen, self).__init__()
 
         # Carrega o spritesheet
         citizen_sheet = pygame.image.load(path.join(img_dir, 'characters.png')).convert_alpha()
@@ -196,10 +196,13 @@ class Citizen(pygame.sprite.Sprite):
         # Define a velocidade de movimento no eixo X
         self.rect.x -= self.speedy
 
-        # ------------ VERIFICAR CÓDIGO NÃO FUNCIONAL -----------------------
         # Verifica se o citizen saiu do campo de visão e elimina o spritesheet
-        '''if self.rect.right < 0:
-            self.kill()'''
+        if self.rect.right < 0:
+            self.kill()
+
+        # Teste para mudança de sprites, de infectado para curado (APAGAR DA VERSÃO FINAL)
+        if self.rect.right < 700:
+            self.state = HEALED
 
         # Verifica o tick atual.
         now = pygame.time.get_ticks()
