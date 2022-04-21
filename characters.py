@@ -196,9 +196,10 @@ class Citizen(pygame.sprite.Sprite):
         # Define a velocidade de movimento no eixo X
         self.rect.x -= self.speedy
 
+        # ------------ VERIFICAR CÓDIGO NÃO FUNCIONAL -----------------------
         # Verifica se o citizen saiu do campo de visão e elimina o spritesheet
-        if self.rect.right < 0:
-            self.kill()
+        '''if self.rect.right < 0:
+            self.kill()'''
 
         # Verifica o tick atual.
         now = pygame.time.get_ticks()

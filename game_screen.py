@@ -21,6 +21,7 @@ FALLING = 2
 
 
 def game_screen(screen):
+    # Variável para contagem para definir tempo de aparição dos citizens
     timer = 0
 
     # Variável para o ajuste de velocidade
@@ -67,7 +68,9 @@ def game_screen(screen):
                 if event.key == pygame.K_ESCAPE:
                     state = DONE
 
+        # Faz a contagem de tempo para aparecer citizens
         timer += 1
+        # O jogo está rodando a 60 FPS, neste caso, a cada 30 FPS (meio segundo) vai aparecer um novo citizen
         if timer > 30:
             timer = 0
             if random() < 0.5:

@@ -10,9 +10,6 @@ HEIGHT = 768  # Altura da tela
 pygame.init()
 pygame.mixer.init()
 
-# Tamanho da tela.
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
 # Nome do jogo
 pygame.display.set_caption(TITULO)
 
