@@ -27,7 +27,7 @@ HEALED = 4
 def game_screen(screen):
 
     # Variável para definir a quantidade de vidas do jogador
-    lives = 5
+    lifes = 5
 
     # Variável para contagem para definir tempo de aparição dos citizens
     timer = 40
@@ -110,9 +110,9 @@ def game_screen(screen):
 
             player_collisions = pygame.sprite.spritecollide(player, citizensGroup, True)
             if player_collisions:
-                lives -= 1
-                print(lives)
-                if lives == 0:
+                lifes -= 1
+                print(f'Vidas restantes: {lifes}')
+                if lifes == 0:
                     print('Game over!')
                     state = DONE
 

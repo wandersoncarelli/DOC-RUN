@@ -154,7 +154,7 @@ class Citizen(pygame.sprite.Sprite):
         super(Citizen, self).__init__()
 
         # Carrega o spritesheet
-        citizen_sheet = pygame.image.load(path.join(img_dir, 'characters.png')).convert_alpha()
+        citizen_sheet = pygame.image.load(path.join(img_dir, 'characters2.png')).convert_alpha()
 
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)

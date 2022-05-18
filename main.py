@@ -6,7 +6,6 @@ TITULO = 'DOC RUN'
 
 # Inicialização do Pygame.
 pygame.init()
-pygame.mixer.init()
 
 # Nome do jogo
 pygame.display.set_caption(TITULO)
