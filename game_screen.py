@@ -10,11 +10,11 @@ img_dir = path.join(path.dirname(__file__), 'img')
 
 FPS = 60  # Frames por segundo
 BLACK = (0, 0, 0)  # Define a cor preta para preencher o fundo da tela
+WHITE = (255, 255, 255)  # Define a cor branca para os textos que serão apresentados
 BACKGROUND_IMG = 'background_img'
 
 # Define a velocidade do mundo, por camadas (temos 11 camadas).
 world_speeds = [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5]
-
 
 # Define estados possíveis do jogador.
 WALKING = 0
@@ -23,14 +23,25 @@ FALLING = 2
 INFECTED = 3
 HEALED = 4
 
+# Variável para definir a quantidade de telas de texto
+TEXT_INDEX = [1]
+
+# Variável definida para contagem de pontuação
+global tempo  # Definida como global para ser possível usar em outras funções
+
 
 def game_screen(screen):
 
+    global tempo  # Necessário repetir a definição da variável
+
+    tempo = 0  # Declarando valor da variável
+
     # Variável para definir a quantidade de vidas do jogador
-    lifes = 5
+    lifes = 3
 
     # Variável para contagem para definir tempo de aparição dos citizens
     timer = 40
+    timer2 = 0
 
     # Variável para o ajuste de velocidade
     clock = pygame.time.Clock()
@@ -70,13 +81,19 @@ def game_screen(screen):
 
         # Faz a contagem de tempo para aparecer citizens
         timer += 1
-        # O jogo está rodando a 60 FPS, neste caso, a cada 30 FPS (meio segundo) vai aparecer um novo citizen
+        timer2 += 1
+
+        # O jogo está rodando a 60 FPS, neste caso, a cada 30 frames vai aparecer um novo citizen
         if timer > 30:
             timer = 0
             if random() < 0.5:
                 new_citizen = Citizen()
                 citizensGroup.add(new_citizen)
                 all_sprites.add(new_citizen)
+
+        if timer2 > 60:
+            tempo += 1
+            timer2 = 0
 
         # Processa os eventos (mouse, teclado, botão, etc).
         for event in pygame.event.get():
@@ -106,19 +123,23 @@ def game_screen(screen):
                 heal_collisions = pygame.sprite.spritecollide(shoot, citizensGroup, False)
                 for citizen in heal_collisions:
                     citizen.state = HEALED
+                    Citizen.curadas += 1
                     citizen.remove(citizensGroup)
 
             player_collisions = pygame.sprite.spritecollide(player, citizensGroup, True)
             if player_collisions:
                 lifes -= 1
-                print(f'Vidas restantes: {lifes}')
                 if lifes == 0:
-                    print('Game over!')
+                    game_over(screen)
                     state = DONE
 
         # Depois de processar os eventos.
         # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentro dele.
         all_sprites.update()
+
+        # Texto para exibir a contagem de vidas na tela
+        font = pygame.font.SysFont('Cambria', 20, True)
+        texto_vidas = font.render(f'Vidas restantes: {lifes}', True, BLACK)
 
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
@@ -143,7 +164,67 @@ def game_screen(screen):
             background_rect2.x += background_rect2.width
             screen.blit(background, background_rect2)
 
+        # Escrevendo o texto com as vidas restantes
+        screen.blit(texto_vidas, (840, 20))
+
         # A cada loop, redesenha os sprites.
         all_sprites.draw(screen)
+        # Depois de desenhar tudo, inverte o display.
+        pygame.display.flip()
+
+
+def game_over(screen):
+    text = ['GAME OVER!', f'Você sobreviveu por {tempo} segundos.', f'Você curou {Citizen.curadas} pessoas.',
+            f'Sua pontuação total é de {tempo * Citizen.curadas} pontos.', '[pressione espaço para continuar]']
+
+    # Variável para o ajuste de velocidade
+    clock = pygame.time.Clock()
+
+    # Carrega a fonte com formatação selecionada
+    font = pygame.font.SysFont('Cambria', 25, True)
+    font2 = pygame.font.SysFont('Cambria', 40, True)
+    font3 = pygame.font.SysFont('Cambria', 18, True)
+
+    # Vamos utilizar esta variável para controlar o texto a ser mostrado
+    text_index = 0
+    game = True
+    while text_index < 1 and game:
+
+        # Ajusta a velocidade do jogo.
+        clock.tick(FPS)
+
+        # Processa os eventos (mouse, teclado, botão, etc).
+        for event in pygame.event.get():
+
+            # Verifica se foi fechado.
+            if event.type == pygame.QUIT:
+                game = False
+
+            # Verifica se soltou alguma tecla.
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    text_index += 1
+
+        # # Depois de processar os eventos.
+        # # Atualiza o texto a ser mostrado na tela
+        # if text_index < 1:
+        #     text = TEXT_INDEX[text_index]
+        # else:
+        #     text = ''
+        texto0 = font2.render(text[0], True, WHITE)
+        texto1 = font.render(text[1], True, WHITE)
+        texto2 = font.render(text[2], True, WHITE)
+        texto3 = font.render(text[3], True, WHITE)
+        texto4 = font3.render(text[4], True, WHITE)
+
+        # A cada loop, redesenha o fundo e os sprites
+        screen.fill(BLACK)
+
+        screen.blit(texto0, (392, 150))
+        screen.blit(texto1, (323, 300))
+        screen.blit(texto2, (385, 350))
+        screen.blit(texto3, (315, 400))
+        screen.blit(texto4, (365, 600))
+
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()

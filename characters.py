@@ -54,20 +54,20 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
 
         # Carrega o spritesheet
-        player_sheet = pygame.image.load(path.join(img_dir, 'characters.png')).convert_alpha()
+        player_sheet = pygame.image.load(path.join(img_dir, 'player.png')).convert_alpha()
 
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
 
         # Aumenta o tamanho do spritesheet para ficar mais fácil de ver
-        player_sheet = pygame.transform.scale(player_sheet, (288, 288))
+        player_sheet = pygame.transform.scale(player_sheet, (160, 160))
 
         # Define sequências de sprites de cada animação
-        spritesheet = load_spritesheet(player_sheet, 4, 4)
+        spritesheet = load_spritesheet(player_sheet, 2, 2)
         self.animations = {
             WALKING: spritesheet[0:4],
-            JUMPING: spritesheet[3:4],
-            FALLING: spritesheet[3:4],
+            JUMPING: spritesheet[1:2],
+            FALLING: spritesheet[0:4],
         }
         # Define estado atual (define qual animação mostrar)
         # Define se o jogador pode ou não pular
@@ -149,24 +149,30 @@ class Player(pygame.sprite.Sprite):
 # Classe Citizen que representa as pessoas doentes ou curadas
 class Citizen(pygame.sprite.Sprite):
 
+    # Variável definida para contagem de pessoas curadas
+    curadas = 0
+
     # Construtor da classe.
     def __init__(self):
         super(Citizen, self).__init__()
 
         # Carrega o spritesheet
-        citizen_sheet = pygame.image.load(path.join(img_dir, 'characters2.png')).convert_alpha()
+        citizen_infected = pygame.image.load(path.join(img_dir, 'infected.png')).convert_alpha()
+        citizen_healed = pygame.image.load(path.join(img_dir, 'healed.png')).convert_alpha()
 
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
 
         # Aumenta o tamanho do spritesheet para ficar mais fácil de ver
-        citizen_sheet = pygame.transform.scale(citizen_sheet, (288, 288))
+        citizen_infected = pygame.transform.scale(citizen_infected, (160, 160))
+        citizen_healed = pygame.transform.scale(citizen_healed, (160, 160))
 
         # Define sequências de sprites de cada animação
-        spritesheet = load_spritesheet(citizen_sheet, 4, 4)
+        infected_sheet = load_spritesheet(citizen_infected, 2, 2)
+        healed_sheet = load_spritesheet(citizen_healed, 2, 2)
         self.animations = {
-            INFECTED: spritesheet[4:8],
-            HEALED: spritesheet[8:12],
+            INFECTED: infected_sheet[1:4],
+            HEALED: healed_sheet[1:4],
         }
         # Define estado atual (define qual animação mostrar)
         self.state = INFECTED
@@ -180,7 +186,7 @@ class Citizen(pygame.sprite.Sprite):
 
         # Armazena as posições em que o herói surge na tela.
         self.rect.x = 1024 + randint(1, 400)
-        self.rect.y = 637
+        self.rect.y = 633
 
         # Guarda o tick da primeira imagem
         self.last_update = pygame.time.get_ticks()
@@ -200,10 +206,6 @@ class Citizen(pygame.sprite.Sprite):
         # Verifica se o citizen saiu do campo de visão e elimina o spritesheet
         if self.rect.right < 0:
             self.kill()
-
-        # Teste para mudança de sprites, de infectado para curado (APAGAR DA VERSÃO FINAL)
-        # if self.rect.right < 700:
-        #    self.state = HEALED
 
         # Verifica o tick atual.
         now = pygame.time.get_ticks()
