@@ -17,8 +17,8 @@ class Shoot(pygame.sprite.Sprite):
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
 
-        # Aumenta o tamanho do spritesheet para ficar mais fácil de ver
-        # self.image = pygame.transform.scale(self.image, (130, 50))
+        # Redimensiona o tamanho do spritesheet para ficar mais fácil de ver
+        self.image = pygame.transform.scale(self.image, (16, 16))
 
         # Detalhes sobre o posicionamento.
         self.rect = self.image.get_rect()

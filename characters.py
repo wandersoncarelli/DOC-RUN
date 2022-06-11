@@ -192,7 +192,7 @@ class Citizen(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
 
         # Define a velocidade de movimento
-        self.speedy = 5 + random() * 2
+        self.speedy = 4.8 + random() * 2
 
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
         self.frame_ticks = 150

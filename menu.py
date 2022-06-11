@@ -79,9 +79,9 @@ def game_credits():
         '[aperte espaço para continuar]',
         'Os participantes do grupo são... [aperte espaço para continuar]',
         'Wanderson Carelli Pereira - github.com/wandersoncarelli ... [aperte espaço para continuar]',
-        'Milena de Oliveira - github.com/xxxx ... [aperte espaço para continuar]',
-        'Gabriel Pereira de Rezende - github.com/xxxx ... [aperte espaço para continuar]',
-        'Claudio Vinicius Melo Lima - github.com/xxxx ... [aperte espaço para continuar]'
+        'Milena de Oliveira - github.com/Fullmilen ... [aperte espaço para continuar]',
+        'Gabriel Pereira de Rezende - github.com/wyrdpy ... [aperte espaço para continuar]',
+        'Claudio Vinicius Melo Lima - github.com/vene-ceos ... [aperte espaço para continuar]'
     ]
 
     # Variável para o ajuste de velocidade

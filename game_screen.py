@@ -34,7 +34,13 @@ def game_screen(screen):
 
     global tempo  # Necessário repetir a definição da variável
 
+    # Definindo o spritesheet inicial das vidas
+    img_lifes = 'lifes-3.png'
+
     tempo = 0  # Declarando valor da variável
+
+    # Spritesheet das vidas
+    lifes_spritesheet = pygame.image.load(path.join(img_dir, img_lifes)).convert_alpha()
 
     # Variável para definir a quantidade de vidas do jogador
     lifes = 3
@@ -116,7 +122,7 @@ def game_screen(screen):
                     shootsGroup.add(shoot)
                     all_sprites.add(shoot)
 
-        # CÓDIGO ABAIXO FUNCIONANDO PARCIALMENTE, POSSUI BUG EM QUE SOMENTE O ÚLTIMO TIRO MUDA O STATE
+        # Definindo as colisões
         if citizen_state == INFECTED:
             citizens_collisions = pygame.sprite.groupcollide(shootsGroup, citizensGroup, True, False)
             if citizens_collisions:
@@ -133,13 +139,17 @@ def game_screen(screen):
                     game_over(screen)
                     state = DONE
 
+            if lifes == 2:
+                img_lifes = 'lifes-2.png'
+            elif lifes == 1:
+                img_lifes = 'lifes-1.png'
+
+            # Spritesheet das vidas
+            lifes_spritesheet = pygame.image.load(path.join(img_dir, img_lifes)).convert_alpha()
+
         # Depois de processar os eventos.
         # Atualiza a ação de cada sprite. O grupo chama o método update() de cada Sprite dentro dele.
         all_sprites.update()
-
-        # Texto para exibir a contagem de vidas na tela
-        font = pygame.font.SysFont('Cambria', 20, True)
-        texto_vidas = font.render(f'Vidas restantes: {lifes}', True, BLACK)
 
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
@@ -164,8 +174,8 @@ def game_screen(screen):
             background_rect2.x += background_rect2.width
             screen.blit(background, background_rect2)
 
-        # Escrevendo o texto com as vidas restantes
-        screen.blit(texto_vidas, (840, 20))
+        # Colocando as imagens das vidas na tela
+        screen.blit(lifes_spritesheet, (850, 50))
 
         # A cada loop, redesenha os sprites.
         all_sprites.draw(screen)
@@ -205,12 +215,7 @@ def game_over(screen):
                 if event.key == pygame.K_SPACE:
                     text_index += 1
 
-        # # Depois de processar os eventos.
-        # # Atualiza o texto a ser mostrado na tela
-        # if text_index < 1:
-        #     text = TEXT_INDEX[text_index]
-        # else:
-        #     text = ''
+        # Definindo os texto a  serem mostrados na tela
         texto0 = font2.render(text[0], True, WHITE)
         texto1 = font.render(text[1], True, WHITE)
         texto2 = font.render(text[2], True, WHITE)
